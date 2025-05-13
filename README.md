@@ -52,12 +52,24 @@ In this exercise you will:
    * **Shell allocation**: your remote session starts.
 3. After login, exit the session with `exit`.
 
-**Provide:**
+Provide:
 
-```bash
-# 1) The exact ssh command you ran
-# 2) A detailed, step-by-step explanation of what happened at each stage
-```
+
+ 1) The exact ssh command you ran
+
+   ```bash
+   ssh oknaguesob@128.140.85.215
+   ```
+
+ 2) A detailed, step-by-step explanation of what happened at each stage
+<summary>
+TCP Connection : Your SSH client tries to open a TCP connection to port 22 on the IP 128.140.85.215.
+SSH Protocol Handshake : Your machine and the server exchange keys and negotiate encryption algorithms.
+Authentication : You'll be prompted for a password 
+Shell Allocation : If authentication succeeds, your shell session starts.
+Exit : This will close the SSH session and return you to your local shell.
+</summary>
+
 
 ---
 
@@ -81,13 +93,26 @@ In this exercise you will:
    * How the **public key** on the server verifies signatures without revealing the private key.
    * Why Ed25519 is preferred (performance, security).
 
-**Provide:**
+Provide:
 
+ 1) The ssh-keygen command you ran
 ```bash
-# 1) The ssh-keygen command you ran
-# 2) The file paths of the generated keys
-# 3) Your written explanation (3–5 sentences) of the signature process
+ssh-keygen -t ed25519 -C "oceane@example.com"
 ```
+ 2) The file paths of the generated keys
+```bash
+/home/okndaguesob/.ssh/id_ed25519
+```
+
+ 3) Your written explanation (3–5 sentences) of the signature process
+<summary>
+when I connect the server sends a random challenge and the SSH client signs it using my private key.If validbyou are authenticated otherweise the server denies access.</summary>
+<summary>
+Because the server already has my public key stored in ~/.ssh/authorized_keys it will verify the digital signature sent by the client.If the signature is valid it confirms my identity that mean the SSH session is allowed.</summary>
+<summary>
+Ed25519 is prefer because it is high secure has a fast performance has small size modern Design</summary>
+
+
 
 ---
 
@@ -122,11 +147,29 @@ In this exercise you will:
    * The difference between `HostName` and `Host`.
    * How aliases prevent long commands.
 
-**Provide:**
+Provide:
 
-```text
-# 1) The full contents of your ~/.ssh/config
-# 2) A short explanation (3–4 sentences) of how the config simplifies connections
+
+ 1) The full contents of your ~/.ssh/config
+```test
+  Host my-remote
+    HostName 128.140.85.215
+    User oceane
+    IdentityFile ~/.ssh/id_ed25519
+
+Host backup-server
+    HostName 128.140.85.215
+    User okndaguesob
+    Port 2222
+    IdentityFile ~/.ssh/id_ed25519_backup
+```
+ 2) A short explanation (3–4 sentences) of how the config simplifies connections
+<summary>
+Host: This is the nickname or your definted alias you. And the HostName: This is the real or IP address  of the remote server you're connecting to.</summary>
+<summary>
+SSH looks up Host my-remote, sees HostName remote.example.com, and connects to that.</summary>
+<summary>
+Aliases in your ~/.ssh/config prevent long SSH commands by allowing you to assign a short name to a full SSH configuration. This lets you connect with a simple, short command instead of typing out a long one each time.</summary>
 ```
 
 ---
@@ -161,10 +204,32 @@ In this exercise you will:
 
 **Provide:**
 
-```bash
-# 1) Each scp command you ran
-# 2) Any flags or options used
-# 3) A brief explanation (2–3 sentences) of scp’s mechanism
+
+ 1) Each scp command you ran
+**Local → Remote
+ ```bash
+ scp /home/okndaguesob/Documents/example.txt okndaguesob@128.140.85.215:~/destination/
+ ```
+**Remote → Local:
+ ```bash
+scp okndaguesob@128.140.85.215:~/remotefile.log ./local_destination/
+ ```
+**Remote → Remote
+ ```bash
+scp -r okndaguesob@128.140.85.215 :/home/okndaguesob/dir1 okndaguesob@128.140.85.215 :/home/okndaguesob/dir2
+ ```
+ 2) Any flags or options used
+<summary>
+-r allow the copy of entire directories</summary>
+<summary>
+-P use the port when copying files</summary>
+<summary>
+-la shows detailed list of all file</summary>
+ 3) A brief explanation (2–3 sentences) of scp’s mechanism
+<summary>
+SSH  uses strong encryption algorithms to secure data as it travels across the network.</summary>
+<summary>
+This encryption protects : The contents of your files ; your username, password, and any other sensitive information ; the integrity of the data (prevents tampering).</summary>
 ```
 
 ---
@@ -207,10 +272,32 @@ In this exercise you will:
 
 **Provide:**
 
+
+ 1) The contents of login_tasks.sh
 ```bash
-# 1) The contents of login_tasks.sh
-# 2) The lines you added to ~/.bashrc or ~/.profile
-# 3) Your explanation (3–5 sentences) of shell init files and sourcing vs. executing
+cat << 'EOF' > ~/login_tasks.sh
+>echo "Welcome $(whoami)! Today is $(date)."
+>uptime
+>ls ~/projects
+>EOF
+chmod +x ~/login_tasks.sh
+```
+ 2) The lines you added to ~/.bashrc or ~/.profile
+```bash
+echo "source ~/login_tasks.sh" >> ~/.bashrc
+```
+
+ 3) Your explanation (3–5 sentences) of shell init files and sourcing vs. executing
+</summary>
+~/.bashrc is read when you open an interactive non-login shell, like when you open a terminal in your desktop session.
+Purpose: Sets up your shell environment for normal, interactive use — things like aliases, prompts, or functions</summary>
+</summary>
+~/.profile (or sometimes ~/.bash_profile) is read by login shells, such as when you SSH into a remote machine.</summary>
+Purpose: Initializes environment variables and startup programs
+</summary>
+Sourcing  runs the script in the current shell, so any variables or changes it makes persist.</summary>
+</summary>
+Executing runs the script in a new subprocess, so any environment changes won’t affect the current shell.</summary>
 ```
 
 ---
